@@ -1,0 +1,16 @@
+1. nodejs.org 홈페이지에 접속한다.
+2. 12.19.0 LTS 밑의 Other Downloads를 클릭한다.
+3. Windows Binary x64를 설치한다.
+4. 환경변수를 설정한다. 내컴퓨터 -> 속성 -> 고급 시스템 설정 -> 환경 변수 -> 시스템 변수 -> 새로 만들기 ->
+   NODE_HOME(경로)
+   다시 Path -> 편집 -> %NODE_HOME%\ 을 추가한다.
+5. cmd 창을 열고 node --version을 입력해서 환경변수가 제대로 설정되었는지 확인해본다.
+6. nodeclipse를 다운받고 이클립스를 재실행한다.
+7. nodeproject를 만들고 우클릭 -> startexplorer -> start shell here 클릭
+8. 콘솔창이 열리면
+npm install express
+npm install http
+npm install url
+명령어를 입력하여 설치
+
+npm install -g fs 도 설치

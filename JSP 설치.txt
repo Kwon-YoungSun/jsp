@@ -1,0 +1,111 @@
+1. 설치할 파일
+apache tomcat v8.5
+eclipse enterprise edition 2020-06version
+(설치가 안되어 있다면)jdk 1.8
+
+2. 환경변수 설정
+CATALINA_HOME
+-> tomcat 설치한 경로로 설정
+CATALINA_BASE
+-> tomcat 설치한 경로로 설정
+Path -> 새로 만들기 -> %CATALINA_HOME%\bin 을 등록해준다.
+(CATALINA_BASE는 등록 안해줌)
+
+cmd -> catalina -V를 입력해서 설정되었는지 확인한다.
+
+3. tomcat 설치경로로 가서 conf 폴더를 찾는다.
+코드를 다음과 같이 수정한다.
+	1) server.xml
+		    <Connector port="8080" protocol="HTTP/1.1"
+               		connectionTimeout="20000"
+               		redirectPort="8443"/>
+		==>
+		    <Connector port="80" protocol="HTTP/1.1"
+               		connectionTimeout="20000"
+               		redirectPort="8443" URIEncoding="UTF-8"/>
+	2) web.xml
+	
+	[ 1 ]	
+	    <filter>
+        		<filter-name>setCharacterEncodingFilter</filter-name>
+        		<filter-class>org.apache.catalina.filters.SetCharacterEncodingFilter</filter-class>
+        		<init-param>
+            		<param-name>encoding</param-name>
+            		<param-value>UTF-8</param-value>
+        		</init-param>
+	<!--
+        		<async-supported>true</async-supported>
+	-->
+	     </filter>
+	
+	[ 2 ]
+		  <!-- The mapping for the Set Character Encoding Filter -->
+		<!--
+		-->
+    		<filter-mapping>
+        			<filter-name>setCharacterEncodingFilter</filter-name>
+        			<url-pattern>/*</url-pattern>
+    		</filter-mapping>
+	
+	[ 3 ]
+		<welcome-file-list>
+        			<welcome-file>index.html</welcome-file>
+        			<welcome-file>index.htm</welcome-file>
+        			<welcome-file>index.jsp</welcome-file>
+			<welcome-file>추가할 파일</welcome-file>
+    		</welcome-file-list>
+	
+	3) context.xml
+	    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    	    <WatchedResource>META-INF/context.xml</WatchedResource>
+		아래에 구문 추가해준다.
+
+	4) tomcat-users.xml
+	(선택) 할 수 있다면 추가해 보자.
+	<role rolename="tomcat"/>
+  	<role rolename="role1"/>
+  	<role rolename="manager"/>
+  	<role rolename="manager-gui"/>
+  	<role rolename="manager-script"/>
+  	<role rolename="manager-jmx"/>
+  	<role rolename="manager-status"/>
+  	<role rolename="admin"/>
+  	<role rolename="admin-gui"/>
+  	<role rolename="admin-script"/>
+  	<user password="increpas" roles="tomcat,manager-gui,admin-gui" username="tomcat"/>
+  	<user password="increpas" roles="tomcat,role1" username="both"/>
+  	<user password="increpas" roles="role1" username="role1"/>
+  	<user password="increpas" roles="tomcat,admin,manager,manager-gui,manager-script,manager-	jmx,manager-status,admin-gui,admin-script" username="admin"/>
+</tomcat-users>
+
+4. 이클립스에 접속해서 Dynamic web project를 3.1버전으로 하여 만든다.
+
+5. WebContent -> WEB-INF -> lib에 jsp-api.jar과 servlet-api.jar, ojdbc6.jar을 복사해준다.
+jsp-api.jar과 servlet-api.jar은 톰캣 설치폴더 -> bin 안에 있다.
+
+6. 만든 프로젝트 우클릭 -> Properties -> Java Build Path -> Libraries -> Add JARS를 눌러,
+WEB-INF에 복사해놓은 jar 파일들을 모두 선택하고 Apply 한다.
+
+7. Project Facets에서 Dynamic Web Module은 3,1v, Java는 1.8버전으로 체크하고,
+우측의 탭 중 Runtimes를 누른 후, Apache Tomcat v8.5에 체크한다.
+
+8. 인코딩 설정을 모두 UTF-8로 변경한다.
+
+9. jsp 파일을 인코딩하여 실행하는 방법
+
+	1) 이클립스를 통한 방법
+		- Project Explorer 우클릭 -> new -> Others -> Server를 클릭
+		- apache tomcat 8.5v를 클릭하고 next
+		- 추가할 프로젝트를 add하고 finish
+		- Servers 탭의 추가된 서버를 실행시키고
+		- 인터넷 브라우저의 주소창에 localhost/프로젝트명/파일명.jsp 을 입력한다.
+
+	2) 이클립스를 사용하지 않는 방법
+		- 이클립스에서 WAR 파일로 내보낼 프로젝트 선택하고
+		- 우클릭해서 Export-WAR 파일 선택
+		- 저장하고 싶은 곳에 저장
+		- 콘솔창을 실행하고 startup.bat을 입력
+		- 인터넷 브라우저에 localhost/ 입력(톰캣 사이트가 뜰 것임.)
+		- Manager App을 클릭한다. 이때 로그인을 해야 한다.(로그인 계정은 tomcat-users.xml에 만든 계정으로 해야 함)
+		- 배치할 WAR 파일 -> 파일 선택 -> 배치한다.
+		- 작업이 끝날 경우 shutdown.bat 명령어를 입력해서 서버를 정상 종료한다.
